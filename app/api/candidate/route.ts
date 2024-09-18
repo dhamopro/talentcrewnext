@@ -4,7 +4,7 @@ import { z } from 'zod'
 import { Candidate } from '@/app/types/candidate.type'
 
 const baseUrl = 'https://pb.talentcrew.tekishub.com/api'
-// Initialize Axios
+
 const axiosInstance = axios.create({
     baseURL: `${baseUrl}/collections/Candidate/records`,
     headers: {
@@ -21,42 +21,32 @@ export async function GET(req: NextRequest, res: NextResponse) {
 
 export async function POST(req: NextRequest, res: NextResponse) {
     try {
-        // multipart form data
         const formData = await req.formData();
         const _data = formData.get('data');
         const data: Partial<Candidate> = JSON.parse(_data as string);
-        const resume = formData.get('resume') as File;
-        const candidate_picture = formData.get('candidate_picture') as File;
-        const document = formData.get('document') as File;
-
-        // Create candidate record (don't append ID here)
-        const data_response = await axiosInstance.post('/', data);  // Make sure this is posting to the base URL
+        const data_response = await axiosInstance.post('/', data);
         const recordId = data_response.data.id;
-
-        console.log(recordId);
-
-        // Upload files to the created candidate record
         const uploadFile = async (file: File, fieldName: string) => {
             const fileFormData = new FormData();
-            fileFormData.append(fieldName, file);
+            fileFormData.append(fieldName, file, file.name);
             console.log(fileFormData.get(fieldName));
-            return axiosInstance.patch(`/${recordId}`, fileFormData);  // Use the ID here for uploading files
+            return axiosInstance.patch(`/${recordId}`, fileFormData);
         };
-
-        await uploadFile(resume, 'resume');
-        await uploadFile(candidate_picture, 'candidate_picture');
-        await uploadFile(document, 'document');
+        for (const [key, value] of formData.entries()) {
+            if (value instanceof File) {
+                await uploadFile(value, key);
+            }
+        }
 
         return NextResponse.json({
             data: data_response.data
         });
     } catch (error) {
-        console.log('Error in POST /api/candidate:', error);
         return NextResponse.json({ error: 'Failed to create candidate' }, { status: 500 });
     }
 }
 
-export async function PUT(req: NextRequest, res: NextResponse) {
-    const response = await axiosInstance.put('/', req.body)
+export async function PATCH(req: NextRequest, res: NextResponse) {
+    const response = await axiosInstance.patch('/', req.body)
     return NextResponse.json(response.data)
 }
