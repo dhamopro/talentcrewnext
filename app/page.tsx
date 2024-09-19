@@ -1,6 +1,10 @@
 "use client"
 import { useState, FormEvent } from 'react';
 import { z, ZodError } from 'zod';
+import { Candidate } from './types/candidate.type';
+import { Education } from './types/education.type';
+import { Experience } from './types/experience.type';
+import { Certification } from './types/certification.type';
 
 // Define the validation schema using Zod
 const schema = z.object({
@@ -39,40 +43,46 @@ const schema = z.object({
 });
 
 export default function Home() {
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<Candidate>({
     id: '',
     first_name: '',
     middle_name: '',
     last_name: '',
     display_name: '',
-    phone: '',
-    alt_phone: '',
+    phone: 0,
+    alt_phone: 0,
     email: '',
     alt_email: '',
     gender: '',
-    current_ctc: '',
-    expected_ctc: '',
+    current_ctc: 0,
+    expected_ctc: 0,
     notice_period: '',
-    total_exp: '',
-    relavant_exp: '',
+    total_exp: 0,
+    relavant_exp: 0,
     location: '',
-    preffered_location: '',
+    preffered_location: [],
     date_of_birth: '',
     current_organisation: '',
-    highest_education_degree: '',
-    college_studied: '',
-    university_studied: '',
-    year_of_passing: '',
+    education: [],
+    experience: [],
+    certification: [],
     linkedin_id: '',
+    resume: '',
+    document_type: [],
+    document: '',
+    document_number: '',
+    issue_date: '',
+    expiry_date: '',
     source_type: '',
     source_name: '',
-    preffered_job: '',
+    preffered_job: [],
+    candidate_picture: '',
     uan_number: '',
     comments: '',
     pan_number: '',
     PreferredJob: '',
-    skillset: '',
-    secondary_skill_set: '',
+    skillset: [],
+    secondary_skill_set: [],
   });
 
   const [files, setFiles] = useState({
@@ -207,22 +217,7 @@ export default function Home() {
               <label className="w-1/3">Current Organisation</label>
               <input type="text" name="current_organisation" value={formData.current_organisation} onChange={handleChange} className="flex-1 border border-gray-300 p-2 rounded-md" />
             </div>
-            <div className="flex flex-row gap-4 items-center">
-              <label className="w-1/3">Highest Education Degree</label>
-              <input type="text" name="highest_education_degree" value={formData.highest_education_degree} onChange={handleChange} className="flex-1 border border-gray-300 p-2 rounded-md" />
-            </div>
-            <div className="flex flex-row gap-4 items-center">
-              <label className="w-1/3">College Studied</label>
-              <input type="text" name="college_studied" value={formData.college_studied} onChange={handleChange} className="flex-1 border border-gray-300 p-2 rounded-md" />
-            </div>
-            <div className="flex flex-row gap-4 items-center">
-              <label className="w-1/3">University Studied</label>
-              <input type="text" name="university_studied" value={formData.university_studied} onChange={handleChange} className="flex-1 border border-gray-300 p-2 rounded-md" />
-            </div>
-            <div className="flex flex-row gap-4 items-center">
-              <label className="w-1/3">Year of Passing</label>
-              <input type="number" name="year_of_passing" value={formData.year_of_passing} onChange={handleChange} className="flex-1 border border-gray-300 p-2 rounded-md" />
-            </div>
+
             <div className="flex flex-row gap-4 items-center">
               <label className="w-1/3">LinkedIn ID</label>
               <input type="text" name="linkedin_id" value={formData.linkedin_id} onChange={handleChange} className="flex-1 border border-gray-300 p-2 rounded-md" />

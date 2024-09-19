@@ -1,3 +1,7 @@
+import { Certification } from "./certification.type";
+import { Education } from "./education.type";
+import { Experience } from "./experience.type";
+
 export interface Candidate {
     id: string;
     first_name: string;
@@ -18,10 +22,9 @@ export interface Candidate {
     preffered_location: string[];
     date_of_birth: string;
     current_organisation: string;
-    highest_education_degree: string;
-    college_studied: string;
-    university_studied: string;
-    year_of_passing: number;
+    education: Education[];
+    experience: Experience[];
+    certification: Certification[];
     linkedin_id: string;
     resume: string;
     document_type: string[];

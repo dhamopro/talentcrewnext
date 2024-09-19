@@ -2,11 +2,35 @@ import { NextRequest, NextResponse } from 'next/server'
 import axios from 'axios'
 import { z } from 'zod'
 import { Candidate } from '@/app/types/candidate.type'
+import { educationSchema } from '../education/route'
+import { experienceSchema } from '../experience/route'
+import { certificationSchema } from '../certificate/route'
 
 const baseUrl = 'https://pb.talentcrew.tekishub.com/api'
 
 const axiosInstance = axios.create({
     baseURL: `${baseUrl}/collections/Candidate/records`,
+    headers: {
+        'Content-Type': 'multipart/form-data'
+    },
+})
+
+const educationAxiosInstance = axios.create({
+    baseURL: `${baseUrl}/collections/Education/records`,
+    headers: {
+        'Content-Type': 'multipart/form-data'
+    },
+})
+
+const experienceAxiosInstance = axios.create({
+    baseURL: `${baseUrl}/collections/Experience/records`,
+    headers: {
+        'Content-Type': 'multipart/form-data'
+    },
+})
+
+const certificationAxiosInstance = axios.create({
+    baseURL: `${baseUrl}/collections/CandidateCertification/records`,
     headers: {
         'Content-Type': 'multipart/form-data'
     },
@@ -32,11 +56,11 @@ const candidateSchema = z.object({
     preffered_location: z.array(z.string()),
     date_of_birth: z.string(),
     current_organisation: z.string(),
-    highest_education_degree: z.string(),
-    college_studied: z.string(),
-    university_studied: z.string(),
-    year_of_passing: z.number(),
+    education: z.array(educationSchema),
+    experience: z.array(experienceSchema),
+    certification: z.array(certificationSchema),
     linkedin_id: z.string(),
+    resume: z.string(),
     document_type: z.array(z.string()),
     document_number: z.string(),
     issue_date: z.string(),
@@ -63,28 +87,55 @@ export async function POST(req: NextRequest, res: NextResponse) {
     try {
         const formData = await req.formData();
         const _data = formData.get('data');
-        const data: Partial<Candidate> = JSON.parse(_data as string);
 
-        // Validate the data using zod
+        const data: Partial<Candidate> = JSON.parse(_data as string);
+        const _education = data.education || [];
+        const _experience = data.experience || [];
+        const _certification = data.certification || [];
+
+        delete data.education;
+        delete data.experience;
+        delete data.certification;
+
         candidateSchema.parse(data);
 
         const data_response = await axiosInstance.post('/', data);
         const recordId = data_response.data.id;
+
         const uploadFile = async (file: File, fieldName: string) => {
             const fileFormData = new FormData();
             fileFormData.append(fieldName, file, file.name);
-            console.log(fileFormData.get(fieldName));
             return axiosInstance.patch(`/${recordId}`, fileFormData);
         };
+
         for (const [key, value] of formData.entries()) {
             if (value instanceof File) {
                 await uploadFile(value, key);
             }
         }
 
+        for (const education of _education) {
+            education.candidate = [recordId];
+            educationSchema.parse(education);
+            await educationAxiosInstance.post('/', education);
+        }
+
+        for (const experience of _experience) {
+            experience.candidate = [recordId];
+            experienceSchema.parse(experience);
+            await experienceAxiosInstance.post('/', experience);
+        }
+
+        for (const certification of _certification) {
+            certification.candidate = [recordId];
+            certificationSchema.parse(certification);
+            await certificationAxiosInstance.post('/', certification);
+        }
+
         return NextResponse.json({
             data: data_response.data
         });
+
     } catch (error) {
         if (error instanceof z.ZodError) {
             return NextResponse.json({ error: error.errors }, { status: 400 });
@@ -94,6 +145,76 @@ export async function POST(req: NextRequest, res: NextResponse) {
 }
 
 export async function PATCH(req: NextRequest, res: NextResponse) {
-    const response = await axiosInstance.patch('/', req.body)
-    return NextResponse.json(response.data)
+    try {
+
+        const formData = await req.formData();
+        const _data = formData.get('data');
+
+        const data: Partial<Candidate> = JSON.parse(_data as string);
+        if (!data.id) { throw new Error('Candidate ID is required') }
+        const _education = data.education || [];
+        const _experience = data.experience || [];
+        const _certification = data.certification || [];
+
+        delete data.education;
+        delete data.experience;
+        delete data.certification;
+
+        candidateSchema.parse(data);
+
+        const data_response = await axiosInstance.patch('/' + data.id, data);
+        const recordId = data_response.data.id;
+
+        const uploadFile = async (file: File, fieldName: string) => {
+            const fileFormData = new FormData();
+            fileFormData.append(fieldName, file, file.name);
+            return axiosInstance.patch(`/${recordId}`, fileFormData);
+        };
+
+        for (const [key, value] of formData.entries()) {
+            if (value instanceof File) {
+                await uploadFile(value, key);
+            }
+        }
+
+        for (const education of _education) {
+            education.candidate = [recordId];
+            educationSchema.parse(education);
+            if (education.id) {
+                await educationAxiosInstance.patch('/' + education.id, education);
+            } else {
+                await educationAxiosInstance.post('/', education);
+            }
+        }
+
+        for (const experience of _experience) {
+            experience.candidate = [recordId];
+            experienceSchema.parse(experience);
+            if (experience.id) {
+                await experienceAxiosInstance.patch('/' + experience.id, experience);
+            } else {
+                await experienceAxiosInstance.post('/', experience);
+            }
+        }
+
+        for (const certification of _certification) {
+            certification.candidate = [recordId];
+            certificationSchema.parse(certification);
+            if (certification.id) {
+                await certificationAxiosInstance.patch('/' + certification.id, certification);
+            } else {
+                await certificationAxiosInstance.post('/', certification);
+            }
+        }
+
+        return NextResponse.json({
+            data: data_response.data
+        });
+
+    } catch (error) {
+        if (error instanceof z.ZodError) {
+            return NextResponse.json({ error: error.errors }, { status: 400 });
+        }
+        return NextResponse.json({ error: 'Failed to create candidate' }, { status: 500 });
+    }
 }
