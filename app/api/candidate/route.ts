@@ -83,7 +83,7 @@ export async function GET(req: NextRequest, res: NextResponse) {
     return NextResponse.json(response.data)
 }
 
-export async function POST(req: NextRequest, res: NextResponse) {
+export async function POST(req: NextRequest) {
     try {
         const formData = await req.formData();
         const _data = formData.get('data');
@@ -144,7 +144,7 @@ export async function POST(req: NextRequest, res: NextResponse) {
     }
 }
 
-export async function PATCH(req: NextRequest, res: NextResponse) {
+export async function PATCH(req: NextRequest) {
     try {
 
         const formData = await req.formData();

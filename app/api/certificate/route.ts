@@ -22,14 +22,14 @@ export const certificationSchema = z.object({
     comments: z.string(),
 })
 
-export async function GET(req: NextRequest, res: NextResponse) {
+export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url)
     const id = searchParams.get('id')
     const response = await axiosInstance.get(`/${id}`)
     return NextResponse.json(response.data)
 }
 
-export async function POST(req: NextRequest, res: NextResponse) {
+export async function POST(req: NextRequest) {
     try {
         const formData = await req.formData();
         const _data = formData.get('data');
@@ -50,7 +50,7 @@ export async function POST(req: NextRequest, res: NextResponse) {
     }
 }
 
-export async function PATCH(req: NextRequest, res: NextResponse) {
+export async function PATCH(req: NextRequest) {
     const response = await axiosInstance.patch('/', req.body)
     return NextResponse.json(response.data)
 }
