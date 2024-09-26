@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable no-unused-vars */
+
 import { NextRequest, NextResponse } from 'next/server'
 import axios from 'axios'
 import { z } from 'zod'
@@ -83,7 +86,7 @@ export async function GET(req: NextRequest, res: NextResponse) {
     return NextResponse.json(response.data)
 }
 
-export async function POST(req: NextRequest) {
+export async function POST(req: NextRequest, res: NextResponse) {
     try {
         const formData = await req.formData();
         const _data = formData.get('data');
@@ -144,7 +147,7 @@ export async function POST(req: NextRequest) {
     }
 }
 
-export async function PATCH(req: NextRequest) {
+export async function PATCH(req: NextRequest, res: NextResponse) {
     try {
 
         const formData = await req.formData();

@@ -1,10 +1,10 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable no-unused-vars */
+
 import axios from "axios";
 import { NextRequest, NextResponse } from "next/server";
 const URL = "https://pb.talentcrew.tekishub.com/api/collections/users/records";
 
-export async function GET(request: NextRequest) {
-
-}
 
 export async function POST(request: NextRequest) {
     try {

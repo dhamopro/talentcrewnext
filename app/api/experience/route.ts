@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars */
+
 import { NextRequest, NextResponse } from 'next/server'
 import axios from 'axios'
 import { z } from 'zod'
