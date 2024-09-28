@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable no-unused-vars */
+
 
 import axios from "axios";
 import { NextRequest, NextResponse } from "next/server";

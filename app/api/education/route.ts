@@ -1,9 +1,8 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable no-unused-vars */
+
 
 import { NextRequest, NextResponse } from 'next/server'
 import axios from 'axios'
-import { z } from 'zod'
+//import { z } from 'zod'
 import { Education } from '@/app/types/education.type'
 
 const baseUrl = 'https://pb.talentcrew.tekishub.com/api'
@@ -15,7 +14,7 @@ const axiosInstance = axios.create({
     },
 })
 
-export const educationSchema = z.object({
+/*export const educationSchema = z.object({
     id: z.string(),
     collegeName: z.string(),
     from: z.string(),
@@ -30,7 +29,7 @@ export const educationSchema = z.object({
     university1: z.string(),
     cpga: z.string(),
     passOut: z.string(),
-})
+})*/
 
 export async function GET(req: NextRequest, res: NextResponse) {
     const { searchParams } = new URL(req.url)
@@ -44,7 +43,7 @@ export async function POST(req: NextRequest, res: NextResponse) {
         const formData = await req.formData();
         const _data = formData.get('data');
         const data: Partial<Education> = JSON.parse(_data as string);
-        educationSchema.parse(data);
+        //educationSchema.parse(data);
         const data_response = await axiosInstance.post('/', data);
         const recordId = data_response.data.id;
 
@@ -53,9 +52,9 @@ export async function POST(req: NextRequest, res: NextResponse) {
             id: recordId
         });
     } catch (error) {
-        if (error instanceof z.ZodError) {
+       /* if (error instanceof z.ZodError) {
             return NextResponse.json({ error: error.errors }, { status: 400 });
-        }
+        }*/
         return NextResponse.json({ error: 'Failed to create candidate' }, { status: 500 });
     }
 }

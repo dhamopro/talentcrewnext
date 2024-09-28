@@ -1,13 +1,12 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable no-unused-vars */
+
 
 import { NextRequest, NextResponse } from 'next/server'
 import axios from 'axios'
-import { z } from 'zod'
+//import { z } from 'zod'
 import { Candidate } from '@/app/types/candidate.type'
-import { educationSchema } from '../education/route'
-import { experienceSchema } from '../experience/route'
-import { certificationSchema } from '../certificate/route'
+//import { educationSchema } from '../education/route'
+//import { experienceSchema } from '../experience/route'
+//import { certificationSchema } from '../certificate/route'
 
 const baseUrl = 'https://pb.talentcrew.tekishub.com/api'
 
@@ -39,7 +38,7 @@ const certificationAxiosInstance = axios.create({
     },
 })
 
-const candidateSchema = z.object({
+/*const candidateSchema = z.object({
     id: z.string(),
     first_name: z.string(),
     middle_name: z.string(),
@@ -78,6 +77,7 @@ const candidateSchema = z.object({
     skillset: z.array(z.string()),
     secondary_skill_set: z.array(z.string()),
 })
+*/
 
 export async function GET(req: NextRequest, res: NextResponse) {
     const { searchParams } = new URL(req.url)
@@ -100,7 +100,7 @@ export async function POST(req: NextRequest, res: NextResponse) {
         delete data.experience;
         delete data.certification;
 
-        candidateSchema.parse(data);
+        //candidateSchema.parse(data);
 
         const data_response = await axiosInstance.post('/', data);
         const recordId = data_response.data.id;
@@ -119,19 +119,19 @@ export async function POST(req: NextRequest, res: NextResponse) {
 
         for (const education of _education) {
             education.candidate = [recordId];
-            educationSchema.parse(education);
+            //educationSchema.parse(education);
             await educationAxiosInstance.post('/', education);
         }
 
         for (const experience of _experience) {
             experience.candidate = [recordId];
-            experienceSchema.parse(experience);
+            //experienceSchema.parse(experience);
             await experienceAxiosInstance.post('/', experience);
         }
 
         for (const certification of _certification) {
             certification.candidate = [recordId];
-            certificationSchema.parse(certification);
+            //certificationSchema.parse(certification);
             await certificationAxiosInstance.post('/', certification);
         }
 
@@ -140,9 +140,9 @@ export async function POST(req: NextRequest, res: NextResponse) {
         });
 
     } catch (error) {
-        if (error instanceof z.ZodError) {
+        /*if (error instanceof z.ZodError) {
             return NextResponse.json({ error: error.errors }, { status: 400 });
-        }
+        }*/
         return NextResponse.json({ error: 'Failed to create candidate' }, { status: 500 });
     }
 }
@@ -163,7 +163,7 @@ export async function PATCH(req: NextRequest, res: NextResponse) {
         delete data.experience;
         delete data.certification;
 
-        candidateSchema.parse(data);
+       // candidateSchema.parse(data);
 
         const data_response = await axiosInstance.patch('/' + data.id, data);
         const recordId = data_response.data.id;
@@ -182,7 +182,7 @@ export async function PATCH(req: NextRequest, res: NextResponse) {
 
         for (const education of _education) {
             education.candidate = [recordId];
-            educationSchema.parse(education);
+            //educationSchema.parse(education);
             if (education.id) {
                 await educationAxiosInstance.patch('/' + education.id, education);
             } else {
@@ -192,7 +192,7 @@ export async function PATCH(req: NextRequest, res: NextResponse) {
 
         for (const experience of _experience) {
             experience.candidate = [recordId];
-            experienceSchema.parse(experience);
+            //experienceSchema.parse(experience);
             if (experience.id) {
                 await experienceAxiosInstance.patch('/' + experience.id, experience);
             } else {
@@ -202,7 +202,7 @@ export async function PATCH(req: NextRequest, res: NextResponse) {
 
         for (const certification of _certification) {
             certification.candidate = [recordId];
-            certificationSchema.parse(certification);
+            //certificationSchema.parse(certification);
             if (certification.id) {
                 await certificationAxiosInstance.patch('/' + certification.id, certification);
             } else {
@@ -215,9 +215,9 @@ export async function PATCH(req: NextRequest, res: NextResponse) {
         });
 
     } catch (error) {
-        if (error instanceof z.ZodError) {
+        /*if (error instanceof z.ZodError) {
             return NextResponse.json({ error: error.errors }, { status: 400 });
-        }
+        }*/
         return NextResponse.json({ error: 'Failed to create candidate' }, { status: 500 });
     }
 }

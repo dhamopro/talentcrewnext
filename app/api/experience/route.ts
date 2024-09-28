@@ -1,8 +1,8 @@
-/* eslint-disable no-unused-vars */
+
 
 import { NextRequest, NextResponse } from 'next/server'
 import axios from 'axios'
-import { z } from 'zod'
+//import { z } from 'zod'
 import { Experience } from '@/app/types/experience.type'
 
 const baseUrl = 'https://pb.talentcrew.tekishub.com/api'
@@ -14,7 +14,7 @@ const axiosInstance = axios.create({
     },
 })
 
-export const experienceSchema = z.object({
+/*export const experienceSchema = z.object({
     id: z.string().optional(),
     candidate: z.array(z.string()),
     company: z.string(),
@@ -27,7 +27,7 @@ export const experienceSchema = z.object({
     empFrom: z.string(),
     empTo: z.string(),
     test: z.string(),
-})
+})*/
 
 export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url)
@@ -41,7 +41,7 @@ export async function POST(req: NextRequest) {
         const formData = await req.formData();
         const _data = formData.get('data');
         const data: Partial<Experience> = JSON.parse(_data as string);
-        experienceSchema.parse(data);
+        //experienceSchema.parse(data);
         const data_response = await axiosInstance.post('/', data);
         const recordId = data_response.data.id;
 
@@ -50,9 +50,9 @@ export async function POST(req: NextRequest) {
             id: recordId
         });
     } catch (error) {
-        if (error instanceof z.ZodError) {
+        /*if (error instanceof z.ZodError) {
             return NextResponse.json({ error: error.errors }, { status: 400 });
-        }
+        }*/
         return NextResponse.json({ error: 'Failed to create candidate' }, { status: 500 });
     }
 }
